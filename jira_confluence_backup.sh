@@ -42,6 +42,10 @@ logmsg()
   	logger -t $SCRIPT_NAME $IN
 }
 
+print_usage(){
+	echo "Usage $0 --database DB_NAME --username USERNAME --password PASSWORD --jira-home-dir JIRA_HOME_DIR --jira-install-dir JIRA_INSTALL_DIR"
+}
+
 ##--------------------------------------------------#
 
 ##----------GetOpt----------------------------------#
@@ -49,8 +53,8 @@ logmsg()
 #check if at least one argument has been passed
 if [ $# -eq 0 ]; then
         echo "No argument passed!"
-        echo "Usage $0 --database DB_NAME --username USERNAME --password PASSWORD --jira-home-dir JIRA_HOME_DIR --jira-install-dir JIRA_INSTALL_DIR"
-        exit 1
+        print_usage
+	exit 1
 fi
 
 
@@ -59,7 +63,11 @@ TEMP=`getopt -o ab:c:: --long database:,username:,password:,jira-home-dir:,jira-
      -n 'example.bash' -- "$@"`
 
 #terminate script if getopt return non zero
-if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+if [ $? != 0 ] || [ "$1" != "--database" ] || [ "$3" != "--username" ] || [ "$5" != "--password" ] || [ "$7" != "--jira-home-dir" ] || [ "$9" != "--jira-install-dir" ]; then 
+	echo "Terminating..." >&2 | errlogmsg 
+	print_usage
+	exit 1
+ fi
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
