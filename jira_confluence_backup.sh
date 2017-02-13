@@ -1,7 +1,21 @@
 #!/bin/bash
 
-#Backup jira and confluence
-#
+###!************************************************************************************************!###
+### Description: Backup Database,JIRA Home and JIRA Install directory
+### Following arguments need to be passed: 
+###  --database DB_NAME --username USERNAME --password PASSWORD --jira-home-dir JIRA_HOME_DIR --jira-install-dir JIRA_INSTALL_DIR 
+###
+### 	 --database			specify name of database that will be dumped (SQL Database)
+###  	 --username			username for access to database
+###  	 --password			password for DB user
+###  	 --jira-home-dir    		Jira Home Directory
+###  	 --jira-install-dir		Jira Install Directory
+###
+### ----------------------------------------------------------------
+### Written by: Kimkil 2017
+### P.S. Feel free for change that will improve this script :-)
+###!************************************************************************************************!###
+
 
 
 #Variables definition
