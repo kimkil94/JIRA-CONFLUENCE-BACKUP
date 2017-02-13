@@ -152,7 +152,6 @@ STAT_FILE="/var/stat_backup_file_${PROJECT_NAME}" #stat file used for storing si
 NOSTAT="0" #zeroing variable
 ##-------------------------------------------------#
 
-
 ##------Start of backup script--------------------##
 
 #TODO: do not remove if exists
@@ -169,6 +168,12 @@ fi
 if [ ! -e ${STAT_FILE} ]; then
 	touch ${STAT_FILE}
 	NOSTAT="1" # set variable to know that stat_file does not contain any value now -> its done usually in first run of script, initial backup
+fi
+
+# remove some partially archived files if exist
+if [ -e ${COMPRESSED_FILE_NAME} ]; then
+	rm  ${COMPRESSED_FILE_NAME}
+	echo "[INF]: Removing old not complete backup tar file ( ${COMPRESSED_FILE_NAME} )" | logmsg
 fi
 
 ## Backup  Jira and Confluence Instance ##
@@ -215,6 +220,7 @@ if [ -s ${COMPRESSED_FILE_NAME}.gz ];then
 		if [[ "${ACTUAL_SIZE}" -gt "${LAST_SIZE}" ]] || [[ "${ACTUAL_SIZE}" -eq "${LAST_SIZE}"  ]]; then
 			echo "[INF]Backup of ${PROJECT_NAME} jira instance done successfully." |logmsg
 			echo "[INF]Compressed archive file has ${ACTUAL_SIZE} MB" | logmsg
+			echo "${ACTUAL_SIZE}" > ${STAT_FILE}
 			exit 0
 		else  # if current backup file is smaller than previous backup file -> not OK -> errlog -> exit 1
 			echo "[ERR]: Backup of ${PROJECT_NAME} jira instance was unsuccessful!"  | errlogmsg
