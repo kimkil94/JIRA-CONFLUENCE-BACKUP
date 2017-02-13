@@ -27,7 +27,7 @@ PROJECT_NAME="TEST_PROJECT"
 ##-------------------------------------------------#
 ##-----Logging functions---------------------------#
 
-readonly SCRIPT_NAME=$(basename $0)
+readonly SCRIPT_NAME=$(basename "$0")
 
 #log only stderr to syslog
 errlogmsg()
@@ -35,7 +35,7 @@ errlogmsg()
 	if [ -n "$1" ]; then
       		IN="$1"
   	else
-   		read IN # This reads a string from stdin and stores it in a variable called IN
+   		read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
 	
 	if [[ -n "${IN// }" ]]; then
@@ -51,9 +51,9 @@ logmsg()
 	if [ -n "$1" ]; then
       		IN="$1"
   	else
-        	read IN # This reads a string from stdin and stores it in a variable called IN
+        	read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
-  	logger -t $SCRIPT_NAME $IN
+  	logger -t "$SCRIPT_NAME" "$IN"
 }
 
 print_usage(){
@@ -73,8 +73,8 @@ fi
 
 
 #get all arguments using getopt
-TEMP=`getopt -o ab:c:: --long database:,username:,password:,jira-home-dir:,jira-install-dir: \
-     -n 'example.bash' -- "$@"`
+TEMP=$(getopt -o ab:c:: --long database:,username:,password:,jira-home-dir:,jira-install-dir: \
+     -n 'example.bash' -- "$@")
 
 #terminate script if getopt return non zero
 if [ $? != 0 ] || [ "$1" != "--database" ] || [ "$3" != "--username" ] || [ "$5" != "--password" ] || [ "$7" != "--jira-home-dir" ] || [ "$9" != "--jira-install-dir" ]; then 
