@@ -13,7 +13,7 @@
 ###
 ### ----------------------------------------------------------------
 ### Written by: Kimkil 2017
-### P.S. Feel free for change that will improve this script :-)
+### P.S. Feel free to change anything that will improve this script :-)
 ###!************************************************************************************************!###
 
 
