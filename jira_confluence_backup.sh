@@ -23,7 +23,7 @@
 ##-------Global settings---------------------------#
 BACKUPDIR="/home/backup"
 MYSQLDUMPBASEFILENAME=$(date +%F)"_mysql_dump"
-PROJECT_NAME="TEST_PROJECT"
+PROJECT_NAME="KANSEIA_JIRA"
 ##-------------------------------------------------#
 ##-----Logging functions---------------------------#
 
@@ -198,7 +198,7 @@ echo "Starting backuping ${PROJECT_NAME} JIRA application data." | logmsg
 	  # Write-Lock database, db is still readable, but not writable
 	  echo "FLUSH TABLES WITH READ LOCK;" 
   
-) | mysql --user=${JIRADBUSER} --password=${JIRADBPASSWD} 2>&1 >/dev/null | errlogmsg
+) | mysql --user=${JIRADBUSER} --password=${JIRADBPASSWD} 2>&1 >/dev/null | grep -vi warning | errlogmsg
 
 # Dump jira database into file
 JIRA_MYSQL_DUMP_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"${MYSQLDUMP_EXTENSION_JIRA}
@@ -206,7 +206,7 @@ JIRA_MYSQL_DUMP_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"${MYSQLDUMP_EXTENSION_JIRA}
 mysqldump -u ${JIRADBUSER} -p${JIRADBPASSWD} ${JIRADBNAME} --max_allowed_packet=512M  > ${JIRA_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | errlogmsg
 
 # Create backup from JIRA home directory, Jira database dump files
-tar rf  ${COMPRESSED_FILE_NAME} ${JIRA_INSTALL_DIR} ${JIRA_HOME} ${JIRA_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | errlogmsg
+tar rf  ${COMPRESSED_FILE_NAME} ${JIRA_INSTALL_DIR} ${JIRA_HOME} ${JIRA_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | grep -vi "Removing leading" | errlogmsg
   
 # Remove sql database dumps, because tar file contains them
 rm  ${ATLASSIAN_BACKUP_DIR}/*.sql > /dev/null 2>&1
@@ -214,7 +214,7 @@ rm  ${ATLASSIAN_BACKUP_DIR}/*.sql > /dev/null 2>&1
 # Unlock database
 ( 
   echo "UNLOCK TABLES;"
-) | mysql --user=${JIRADBUSER} --password=${JIRADBPASSWD} 2>&1 >/dev/null | errlogmsg
+) | mysql --user=${JIRADBUSER} --password=${JIRADBPASSWD} 2>&1 >/dev/null | grep -vi warning | errlogmsg
 
 # Compress data with gzip
 /bin/gzip -f ${COMPRESSED_FILE_NAME} 2>&1 >/dev/null | errlogmsg
