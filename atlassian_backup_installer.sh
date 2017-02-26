@@ -25,6 +25,8 @@ CONFL_BCKP_SCRIPTNAME="atlassian_confluence_backup.sh"
 JIRA_BCKP_SCRIPTNAME="atlassian_jira_backup.sh"
 
 
+set -e 
+
 if [ ! -d ${INSTALL_DIRECTORY} ];then
     mkdir ${INSTALL_DIRECTORY}
     echo -ne "Install Directory: ${INSTALL_DIRECTORY} created!\n"
