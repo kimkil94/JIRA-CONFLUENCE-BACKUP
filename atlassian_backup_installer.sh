@@ -21,8 +21,8 @@
 INSTALL_DIRECTORY="/opt/backup_scripts"
 
 DIR=$(dirname $0)
-CONFL_BCKP_SCRIPTNAME="atlassian_confluence_backup.sh"
-JIRA_BCKP_SCRIPTNAME="atlassian_jira_backup.sh"
+CONFL_BCKP_SCRIPTNAME="atlassian_confluence_backup_cron.sh"
+JIRA_BCKP_SCRIPTNAME="atlassian_jira_backup_cron.sh"
 
 
 set -e 
@@ -113,6 +113,47 @@ EOF
 
 }
 
+set_cron(){ 
+    local type=${1}
+    local readonly confluence_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_confluence_backup_cron.sh"
+    local readonly jira_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_jira_backup_cron.sh"
+    if [ "${type}" = "confluence" ];then
+        echo -ne "Setting up cron job for backuping Confluence\n"
+        if [ ! -f /etc/cron.d/confluence_backup ];then
+        /bin/cp ${DIR}/atlassian_confluence_backup_cron.sh ${INSTALL_DIRECTORY}/
+            cat << EOF > /etc/cron.d/confluence_backup
+#Cron Job for backuping Confluence Instance
+PATH=/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+$confluence_job
+EOF
+        /etc/init.d/cron reload
+        sleep 1
+        else
+            exit 1
+        fi
+    elif [ "${type}" = "jira" ];then
+        echo -ne "Setting up cron job for backuping Jira\n"
+        if [ ! -f /etc/cron.d/jira_backup ];then
+        /bin/cp ${DIR}/atlassian_jira_backup_cron.sh ${INSTALL_DIRECTORY}/
+            cat << EOF > /etc/cron.d/jira_backup
+#Cron Job for backuping Jira Instance
+PATH=/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+$jira_job
+EOF
+        /etc/init.d/cron reload
+        sleep 1
+        else
+            exit 1
+        fi
+    else
+        exit 1
+    fi
+
+}
+
+
 install_wiz_jira()    {
         echo -ne "Setting up backup plan for JIRA instance.\n"
         echo -ne "JIRA HOME directory [e.g. /var/atlassian/application-data/jira/]\n" "\n"
@@ -162,6 +203,7 @@ install_wiz_jira()    {
             #write configurat
             echo "Writing configuration"
             write_config_file "jira" ${jira_home_directory} ${jira_install_directory} ${jira_db_name} ${jira_usr_name} ${jira_usr_pass}
+            set_cron "jira"
         elif [ "${confirm_jira_settings}" = "n" ];then
             exit 1
         fi
@@ -216,6 +258,7 @@ install_wiz_confluence()    {
             #write configur
             echo "Writing configuration"
             write_config_file "confluence" ${confluence_home_directory} ${confluence_install_directory} ${confluence_db_name} ${confluence_usr_name} ${confluence_usr_pass}
+            set_cron "confluence"
         elif [ "${confirm_confl_settings}" = "n" ];then
             exit 1
         fi
