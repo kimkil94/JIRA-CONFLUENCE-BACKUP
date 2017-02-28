@@ -10,14 +10,13 @@
 ### P.S. Feel free to change anything that will improve this script :-)
 ###!************************************************************************************************!###
 
-set -e
 
 #Variables definition
 
 ##-------Global settings---------------------------#
 BACKUPDIR="/home/backup"
 MYSQLDUMPBASEFILENAME=$(date +%F)"_mysql_dump"
-PROJECT_NAME="KANSEIA_CONFLUENCE"
+PROJECT_NAME="${1}"
 ##-------------------------------------------------#
 ##-----Logging functions---------------------------#
 
@@ -60,7 +59,7 @@ print_usage(){
 ##--------CONFLUENCE/CONFLUENCE SETTINGS---------#
 ATLASSIAN_BACKUP_FILE_NAME=${PROJECT_NAME}_atlassian-backup
 ATLASSIAN_BACKUP_DIR=${BACKUPDIR}"/"${ATLASSIAN_BACKUP_FILE_NAME}
-CONFLUENCE_CONF="/opt/backup_scripts/confluence_backup.conf"
+CONFLUENCE_CONF="/opt/backup_scripts/${PROJECT_NAME}_confluence_backup.conf"
 
 source ${CONFLUENCE_CONF}
 

@@ -30,7 +30,6 @@ set -e
 if [ ! -d ${INSTALL_DIRECTORY} ];then
     mkdir ${INSTALL_DIRECTORY}
     echo -ne "Install Directory: ${INSTALL_DIRECTORY} created!\n"
-    exit 1
 fi
 
 #TODO REMOVE THIS LINE
@@ -43,70 +42,74 @@ if [ ! -e ${DIR}/${CONFL_BCKP_SCRIPT_NAME} ] || [ ! -e "${DIR}/${HURA_BCKP_SCRIP
 fi
 
 write_config_file(){
-    instance_type=${1}
-    home_dir=${2}
-    install_dir=${3}
-    db_name=${4}
-    db_username=${5}
-    db_passwd=${6}
-
+    local instance_type=${1}
+    local home_dir=${2}
+    local install_dir=${3}
+    local db_name=${4}
+    local db_username=${5}
+    local db_passwd=${6}
+    local project_name=${7}
     if [ "${instance_type}" = "jira" ];then
-        if [ -f ${INSTALL_DIRECTORY}/jira_backup.conf ];then
-            echo -ne "Config file for JIRA backup already exist [ ${INSTALL_DIRECTORY}/jira_backup.conf ]\n"
+        if [ -f ${INSTALL_DIRECTORY}/${project_name}_jira_backup.conf ];then
+            echo -ne "Config file for JIRA backup already exist [ ${INSTALL_DIRECTORY}/${project_name}jira_backup.conf ]\n"
             echo -ne "Do you want to rewrite it? [y|n] : \n" "\n"
             read rewrite_jira_config
             if [ "${rewrite_jira_config}" = "y" ];then
-                cat << EOF > ${INSTALL_DIRECTORY}/jira_backup.conf
+                cat << EOF > ${INSTALL_DIRECTORY}/${project_name}_jira_backup.conf
 #Configuration file for back up Atlassian Jira Instance
-jira_home_directory="$home_dir"
-jira_install_directory="$install_dir"
-jira_database_name="$db_name"
-jira_database_username="$db_username"
-jira_database_password="$db_passwd"
+jira_home_directory="${home_dir}"
+jira_install_directory="${install_dir}"
+jira_database_name="${db_name}"
+jira_database_username="${db_username}"
+jira_database_password="${db_passwd}"
+jira_project_name="${project_name}"
 EOF
             else
                 echo -ne "Exiting ...\n"
                 exit 1
             fi
         else
-            echo -ne "Writing configuration to ${INSTALL_DIRECTORY}/jira_backup.conf ! \n"
-            cat << EOF > ${INSTALL_DIRECTORY}/jira_backup.conf
+            echo -ne "Writing configuration to ${INSTALL_DIRECTORY}/${project_name}_jira_backup.conf ! \n"
+            cat << EOF > ${INSTALL_DIRECTORY}/${project_name}_jira_backup.conf
 #Configuration file for back up Atlassian Jira Instance
-jira_home_directory="$home_dir"
-jira_install_directory="$install_dir"
-jira_database_name="$db_name"
-jira_database_username="$db_username"
-jira_database_password="$db_passwd"
+jira_home_directory="${home_dir}"
+jira_install_directory="${install_dir}"
+jira_database_name="${db_name}"
+jira_database_username="${db_username}"
+jira_database_password="${db_passwd}"
+jira_project_name="${project_name}"
 EOF
         fi
     # write configuration for confluence
     elif [ "${instance_type}" = "confluence" ];then
-        if [ -f ${INSTALL_DIRECTORY}/confluence_backup.conf ];then
-            echo -ne "Config file for Confluence backup already exist [ ${INSTALL_DIRECTORY}/confluence_backup.conf ]\n"
+        if [ -f ${INSTALL_DIRECTORY}/${project_name}confluence_backup.conf ];then
+            echo -ne "Config file for Confluence backup already exist [ ${INSTALL_DIRECTORY}/${project_name}confluence_backup.conf ]\n"
             echo -ne "Do you want to rewrite it? [y|n] : \n" "\n"
             read rewrite_confluence_config
             if [ "${rewrite_confluence_config}" = "y" ];then
-                cat << EOF > ${INSTALL_DIRECTORY}/confluence_backup.conf
+                cat << EOF > ${INSTALL_DIRECTORY}/${project_name}_confluence_backup.conf
 #Configuration file for back up Atlassian Confluence Instance
-confluence_home_directory="$home_dir"
-confluence_install_directory="$install_dir"
-confluence_database_name="$db_name"
-confluence_database_username="$db_username"
-confluence_database_password="$db_passwd"
+confluence_home_directory="${home_dir}"
+confluence_install_directory="${install_dir}"
+confluence_database_name="${db_name}"
+confluence_database_username="${db_username}"
+confluence_database_password="${db_passwd}"
+confluence_project_name="${project_name}"
 EOF
             else
                 echo -ne "Exiting ...\n"
                 exit 1
             fi
         else
-            echo -ne "Writing configuration to ${INSTALL_DIRECTORY}/confluence_backup.conf ! \n"
-            cat << EOF > ${INSTALL_DIRECTORY}/confluence_backup.conf
+            echo -ne "Writing configuration to ${INSTALL_DIRECTORY}/${project_name}_confluence_backup.conf ! \n"
+            cat << EOF > ${INSTALL_DIRECTORY}/${project_name}_confluence_backup.conf
 #Configuration file for back up Atlassian Confluence Instance
-confluence_home_directory="$home_dir"
-confluence_install_directory="$install_dir"
-confluence_database_name="$db_name"
-confluence_database_username="$db_username"
-confluence_database_password="$db_passwd"
+confluence_home_directory="${home_dir}"
+confluence_install_directory="${install_dir}"
+confluence_database_name="${db_name}"
+confluence_database_username="${db_username}"
+confluence_database_password="${db_passwd}"
+confluence_project_name="${project_name}"
 EOF
         fi
     fi
@@ -115,13 +118,14 @@ EOF
 
 set_cron(){ 
     local type=${1}
-    local readonly confluence_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_confluence_backup_cron.sh"
-    local readonly jira_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_jira_backup_cron.sh"
+    local project_name=${2}
+    local readonly confluence_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_confluence_backup_cron.sh "${project_name}""
+    local readonly jira_job="30 0 * * * root $INSTALL_DIRECTORY/atlassian_jira_backup_cron.sh "${project_name}""
     if [ "${type}" = "confluence" ];then
         echo -ne "Setting up cron job for backuping Confluence\n"
         if [ ! -f /etc/cron.d/confluence_backup ];then
         /bin/cp ${DIR}/atlassian_confluence_backup_cron.sh ${INSTALL_DIRECTORY}/
-            cat << EOF > /etc/cron.d/confluence_backup
+            cat << EOF > /etc/cron.d/confluence_${project_name}_backup
 #Cron Job for backuping Confluence Instance
 PATH=/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -136,7 +140,7 @@ EOF
         echo -ne "Setting up cron job for backuping Jira\n"
         if [ ! -f /etc/cron.d/jira_backup ];then
         /bin/cp ${DIR}/atlassian_jira_backup_cron.sh ${INSTALL_DIRECTORY}/
-            cat << EOF > /etc/cron.d/jira_backup
+            cat << EOF > /etc/cron.d/jira_${project_name}_backup
 #Cron Job for backuping Jira Instance
 PATH=/usr/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -156,6 +160,12 @@ EOF
 
 install_wiz_jira()    {
         echo -ne "Setting up backup plan for JIRA instance.\n"
+        echo -ne "Project Name of Jira Instance: \n" "\n"
+        read project_name
+        if [ -z ${project_name} ];then
+            echo -ne "Project name needs to be specified! \n"
+            exit 1
+        fi
         echo -ne "JIRA HOME directory [e.g. /var/atlassian/application-data/jira/]\n" "\n"
         read jira_home_directory
         if [ ! -d "${jira_home_directory}" ];then
@@ -191,6 +201,7 @@ install_wiz_jira()    {
         echo -ne "Preparing inputs ... \n" "\n"
         sleep 1
         echo -ne "################################################\n"
+        echo -ne "Jira Project Name:        ${project_name}\n"
         echo -ne "Jira Home Directory :     ${jira_home_directory} \n"
         echo -ne "Jira Install Directory :  ${jira_install_directory} \n"
         echo -ne "Jira DB Name:             ${jira_db_name} \n"
@@ -202,8 +213,8 @@ install_wiz_jira()    {
         if [ "${confirm_jira_settings}" = "y" ];then
             #write configurat
             echo "Writing configuration"
-            write_config_file "jira" ${jira_home_directory} ${jira_install_directory} ${jira_db_name} ${jira_usr_name} ${jira_usr_pass}
-            set_cron "jira"
+            write_config_file "jira" ${jira_home_directory} ${jira_install_directory} ${jira_db_name} ${jira_usr_name} ${jira_usr_pass} ${project_name}
+            set_cron "jira" "${project_name}"
         elif [ "${confirm_jira_settings}" = "n" ];then
             exit 1
         fi
@@ -211,6 +222,12 @@ install_wiz_jira()    {
 
 install_wiz_confluence()    {
         echo -ne "Setting up backup plan for CONFLUENCE instance.\n"
+        echo -ne "Project Name of Confluence Instance: \n" "\n"
+        read project_name
+        if [ -z ${project_name} ];then
+            echo -ne "Project name needs to be specified! \n"
+            exit 1
+        fi
         echo -ne "CONFLUENCE HOME directory [e.g. /var/atlassian/application-data/confluence/]\n" "\n"
         read confluence_home_directory
         if [ ! -d "${confluence_home_directory}" ];then
@@ -246,6 +263,7 @@ install_wiz_confluence()    {
         echo -ne "Preparing inputs ... \n" "\n"
         sleep 1
         echo -ne "################################################\n"
+        echo -ne "Confluence Project Name:          ${project_name}\n"
         echo -ne "Confluence Home Directory :       ${confluence_home_directory} \n"
         echo -ne "Confluence Install Directory :    ${confluence_install_directory} \n"
         echo -ne "Confluence DB Name:               ${confluence_db_name} \n"
@@ -257,8 +275,8 @@ install_wiz_confluence()    {
         if [ "${confirm_confl_settings}" = "y" ];then
             #write configur
             echo "Writing configuration"
-            write_config_file "confluence" ${confluence_home_directory} ${confluence_install_directory} ${confluence_db_name} ${confluence_usr_name} ${confluence_usr_pass}
-            set_cron "confluence"
+            write_config_file "confluence" ${confluence_home_directory} ${confluence_install_directory} ${confluence_db_name} ${confluence_usr_name} ${confluence_usr_pass} ${project_name}
+            set_cron "confluence" "${project_name}"
         elif [ "${confirm_confl_settings}" = "n" ];then
             exit 1
         fi
