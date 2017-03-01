@@ -63,7 +63,7 @@ ATLASSIAN_BACKUP_DIR=${BACKUPDIR}"/"${ATLASSIAN_BACKUP_FILE_NAME}
 JIRA_CONF="/opt/backup_scripts/${PROJECT_NAME}_jira_backup.conf"
 
 ## -- Jira settings -- ##
-source ${CONFLUENCE_CONF}
+source ${JIRA_CONF}
 
 JIRAHOME=${jira_home_directory}
 JIRAINSTALLDIR=${jira_install_directory}
@@ -103,8 +103,8 @@ fi
 MYSQLDUMP_EXTENSION_JIRA=${MYSQLDUMPBASEFILENAME}"_"${PROJECT_NAME}"_jira.sql"
 
 #Final compressed file name
-COMPRESSED_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"$(date +%F)"_"${ATLASSIAN_BACKUP_FILE_NAME}.tar
-STAT_FILE="/var/stat_backup_file_${PROJECT_NAME}" #stat file used for storing size (in MB) of latest backup archive file /COMPRESSED_FILENAME/
+COMPRESSED_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"$(date +%F)"_"${ATLASSIAN_BACKUP_FILE_NAME}_jira.tar
+STAT_FILE="/var/stat_backup_file_${PROJECT_NAME}_jira" #stat file used for storing size (in MB) of latest backup archive file /COMPRESSED_FILENAME/
 NOSTAT="0" #zeroing variable
 ##-------------------------------------------------#
 
