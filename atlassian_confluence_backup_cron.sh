@@ -105,7 +105,7 @@ fi
 MYSQLDUMP_EXTENSION_CONFLUENCE=${MYSQLDUMPBASEFILENAME}"_"${PROJECT_NAME}"_confluence.sql"
 
 #Final compressed file name
-COMPRESSED_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"$(date +%F)"_"${ATLASSIAN_BACKUP_FILE_NAME}.tar
+COMPRESSED_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"$(date +%F)"_"${ATLASSIAN_BACKUP_FILE_NAME}_confluence.tar
 STAT_FILE="/var/stat_backup_file_${PROJECT_NAME}" #stat file used for storing size (in MB) of latest backup archive file /COMPRESSED_FILENAME/
 NOSTAT="0" #zeroing variable
 ##-------------------------------------------------#
