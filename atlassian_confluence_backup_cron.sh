@@ -25,14 +25,14 @@ readonly SCRIPT_NAME=$(basename "$0")
 #log only stderr to syslog
 errlogmsg()
 {
-	if [ -n "$1" ]; then
-      		IN="$1"
+	if [ -n "${1}" ]; then
+      		IN="${1}"
   	else
    		read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
 	
 	if [[ -n "${IN// }" ]]; then
-  		logger -t $SCRIPT_NAME "ERROR : $IN"
+  		logger -t ${SCRIPT_NAME} "ERROR : ${IN}"
 	fi
 	
 	IN=""
@@ -41,16 +41,16 @@ errlogmsg()
 #log only stdout to syslog
 logmsg()
 {
-	if [ -n "$1" ]; then
-      		IN="$1"
+	if [ -n "${1}" ]; then
+      		IN="${1}"
   	else
         	read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
-  	logger -t "$SCRIPT_NAME" "$IN"
+  	logger -t "${SCRIPT_NAME}" "${IN}"
 }
 
 print_usage(){
-	echo "Usage $0 --database DB_NAME --username USERNAME --password PASSWORD --confluence-home-dir CONFLUENCE_HOME_DIR --confluence-install-dir CONFLUENCE_INSTALL_DIR"
+	echo "Usage ${0} --database DB_NAME --username USERNAME --password PASSWORD --confluence-home-dir CONFLUENCE_HOME_DIR --confluence-install-dir CONFLUENCE_INSTALL_DIR"
 }
 
 ##--------------------------------------------------#

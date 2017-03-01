@@ -24,14 +24,14 @@ readonly SCRIPT_NAME=$(basename "$0")
 #log only stderr to syslog
 errlogmsg()
 {
-	if [ -n "$1" ]; then
-      		IN="$1"
+	if [ -n "${1}" ]; then
+      		IN="${1}"
   	else
    		read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
 	
 	if [[ -n "${IN// }" ]]; then
-  		logger -t $SCRIPT_NAME "ERROR : $IN"
+  		logger -t ${SCRIPT_NAME} "ERROR : ${IN}"
 	fi
 	
 	IN=""
@@ -40,16 +40,16 @@ errlogmsg()
 #log only stdout to syslog
 logmsg()
 {
-	if [ -n "$1" ]; then
-      		IN="$1"
+	if [ -n "${1}" ]; then
+      		IN="${1}"
   	else
         	read -r IN # This reads a string from stdin and stores it in a variable called IN
   	fi
-  	logger -t "$SCRIPT_NAME" "$IN"
+  	logger -t "${SCRIPT_NAME}" "${IN}"
 }
 
 print_usage(){
-	echo "Usage $0 --database DB_NAME --username USERNAME --password PASSWORD --jira-home-dir JIRA_HOME_DIR --jira-install-dir JIRA_INSTALL_DIR"
+	echo "Usage ${0} --database DB_NAME --username USERNAME --password PASSWORD --jira-home-dir JIRA_HOME_DIR --jira-install-dir JIRA_INSTALL_DIR"
 }
 
 ##--------------------------------------------------#
@@ -165,7 +165,7 @@ rm  ${ATLASSIAN_BACKUP_DIR}/*.sql > /dev/null 2>&1
 if [ -s ${COMPRESSED_FILE_NAME}.gz ];then
 	echo "Backup file: ${COMPRESSED_FILE_NAME} created successfully." | logmsg
 	# if it is first run(NOSTAT==1), get size of archive file and write it to stat file.
-	if [ $NOSTAT -eq "1" ]; then
+	if [ ${NOSTAT} -eq "1" ]; then
 		du -m ${COMPRESSED_FILE_NAME}.gz | awk '{print $1}' > ${STAT_FILE}
 	fi
 	# if it is NOT first run
