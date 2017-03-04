@@ -147,7 +147,7 @@ echo "Starting backuping ${PROJECT_NAME} CONFLUENCE application data." | logmsg
 # Dump confluence database into file
 CONFLUENCE_MYSQL_DUMP_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"${MYSQLDUMP_EXTENSION_CONFLUENCE}
 
-mysqldump -u ${CONFLUENCEDBUSER} -p${CONFLUENCEDBPASSWD} ${CONFLUENCEDBNAME} --max_allowed_packet=512M  > ${CONFLUENCE_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | errlogmsg
+mysqldump -u ${CONFLUENCEDBUSER} -p${CONFLUENCEDBPASSWD} ${CONFLUENCEDBNAME} --max_allowed_packet=512M  > ${CONFLUENCE_MYSQL_DUMP_FILE_NAME} | errlogmsg
 
 # Create backup from CONFLUENCE home directory, Jira database dump files
 tar rf  ${COMPRESSED_FILE_NAME} ${CONFLUENCE_INSTALL_DIR} ${CONFLUENCE_HOME} ${CONFLUENCE_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | grep -vi "Removing leading" | errlogmsg

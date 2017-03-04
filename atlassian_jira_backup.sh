@@ -203,7 +203,7 @@ echo "Starting backuping ${PROJECT_NAME} JIRA application data." | logmsg
 # Dump jira database into file
 JIRA_MYSQL_DUMP_FILE_NAME=${ATLASSIAN_BACKUP_DIR}"/"${MYSQLDUMP_EXTENSION_JIRA}
 
-mysqldump -u ${JIRADBUSER} -p${JIRADBPASSWD} ${JIRADBNAME} --max_allowed_packet=512M  > ${JIRA_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | errlogmsg
+mysqldump -u ${JIRADBUSER} -p${JIRADBPASSWD} ${JIRADBNAME} --max_allowed_packet=512M  > ${JIRA_MYSQL_DUMP_FILE_NAME} | errlogmsg
 
 # Create backup from JIRA home directory, Jira database dump files
 tar rf  ${COMPRESSED_FILE_NAME} ${JIRA_INSTALL_DIR} ${JIRA_HOME} ${JIRA_MYSQL_DUMP_FILE_NAME} 2>&1 >/dev/null | grep -vi "Removing leading" | errlogmsg
